@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react'
-import { Text, View, TextInput, TouchableOpacity, FlatList, Keyboard } from 'react-native'
+import { Text, View, TextInput, TouchableOpacity, FlatList, Keyboard,Animated } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
 
@@ -13,8 +13,20 @@ export default function Home() {
     const [input, setInput] = useState('')
     const [error, setError] = useState(false)
     const [repositores, setRepositores]= useState([])
+    const [offest] = useState(new Animated.ValueXY({x:200, y:0}))
 
     useEffect(()=>{
+
+        Animated.spring(offest.x, {
+            toValue:0,
+            speed: 4,
+            useNativeDriver: true,
+            bounciness: 20,
+
+        }).start()
+
+
+
         async function loadRepository(){
             const realm = await getRealm();
             // sorted('stars', true) ordemando para quem tem mais estrelas
@@ -88,12 +100,21 @@ export default function Home() {
             style={{flex:1}}
         >
            
-            <View style={styles.container}>
+            < Animated.View style={[
+                styles.container,
+                {
+                    transform: [
+                        {translateX: offest.x}
+                    ]
+                }
+                
+                ]}>
                 <TouchableOpacity style={styles.Background} onPress={Background}>
                         <Text style={styles.BackgroundText}>Background</Text>
                         <Icon name="ios-repeat" size={29} color="#fff"/>
                 </TouchableOpacity>
                     <Text style={styles.title}>Repositório</Text>
+
                     <View style={styles.form}>
                         <TextInput 
                             
@@ -109,6 +130,7 @@ export default function Home() {
                             <Icon style={styles.icon} name="md-add" size={22} color='#FFF' />
                         </TouchableOpacity>
                     </View>
+
                     <FlatList style={styles.list}
                         keyboardShouldPersistTaps="handled"
                         contentContainerStyle={{paddingHorizontal: 20}}
@@ -119,7 +141,7 @@ export default function Home() {
                             <Repositorio data={item} onRefresh={() => handleRefreshRepository(item)}/>
                         )}
                     />
-            </View>
+            </Animated.View>
         </LinearGradient>
 
     )
